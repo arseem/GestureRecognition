@@ -58,6 +58,7 @@ body {
     font-size: 36px;
     font-weight: bold;
     margin-bottom: 10px;
+    margin-top: 10px;
     text-align: center;
 }
 
@@ -173,4 +174,37 @@ body {
 
 .popup-buttons {
     text-align: right;
+}
+
+.fps-counter {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    background-color: rgba(255, 255, 255, 0.4);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: small;
+}
+
+.gesture-verdict {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    z-index: 2;
+    background-color: rgba(255, 255, 255, 0.4);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: small;
+}
+
+.gesture-scores {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+    background-color: rgba(255, 255, 255, 0.4);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: small;
 }

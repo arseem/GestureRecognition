@@ -96,3 +96,45 @@ function recordGesture() {
 
     showPopup();
 }
+
+function updateFps() {
+    fetch('/get_fps')
+        .then(response => response.json())
+        .then(data => {
+            // Update FPS
+            const fpsDisplay = document.getElementById('fpsDisplay');
+            const gestures = data.gestures;
+            fpsDisplay.textContent = `FPS: ${data.fps}`;
+        });
+}
+
+function updateInfo() {
+    fetch('/get_info')
+        .then(response => response.json())
+        .then(data => {
+            console.log('KURWA');
+            console.log(data);
+            const scoresDisplay = document.getElementById('gestureScores');
+            const verdictDisplay = document.getElementById('verdictDisplay');
+            const gestures_list = data.gestures;
+            const scores_list = data.current_scores;
+            const prediciton = data.current_prediction;
+
+            output = "";
+            for (var i = 0; i < gestures_list.length; i++) {
+                output += `<div>${gestures_list[i]}: ${scores_list[i]}</div>`;
+            }
+
+            if (prediciton) {
+                verdictDisplay.textContent = `Detected: ${prediciton}`;
+            } else {
+                verdictDisplay.textContent = 'No gesture detected';
+            }
+
+            scoresDisplay.innerHTML = output;
+        });
+}
+
+// Call the updateInfo function every 0.1 seconds
+const fpsInterval = setInterval(updateFps, 100);
+const dataInterval = setInterval(updateInfo, 100);
