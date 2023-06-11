@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestures Recognition</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/index.css') }}">
+    <script src="{{ url_for('static',filename='scripts/index.js') }}" type="text/javascript"></script>
+
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Gestures Recognition</h1>
+        <div class="row">
+            <div class="col-md-8">
+                <h2 class="camera-feed-title">Camera feed</h2>
+                <div class="camera-feed">
+                    <iframe id="videoFrame" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-success menu-button" onclick="toggleRecognition()">Toggle Recognition</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-secondary menu-button" onclick="hideGui()">Hide GUI</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h2 class="gestures-title">Gestures</h2>
+                <ul class="list-group gestures-list" id="gesturesList">
+                    {% for i in range(len_gesture_list) %}
+                        <li class="list-group-item">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" id="gesture{{ i }}"
+                                    {% if gesture_on[i] %}checked{% endif %}
+                                    onchange="toggleGesture({{ i }})">
+                                <label class="custom-control-label {% if not gesture_on[i] %}gesture-off{% else %}gesture-on{% endif %}" for="gesture{{ i }}">{{ gesture_list[i] }}</label>
+                                <button class="btn btn-link delete-button" onclick="deleteGesture({{ i }})"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <button type="button" class="btn btn-primary btn-block menu-button" onclick="recordGesture()">Add Gesture</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup-container" id="popupContainer">
+        <div class="popup">
+            <h3 class="popup-title">Record New Gesture</h3>
+            <label class="popup-label" for="gestureName">Gesture Name:</label>
+            <input type="text" class="popup-input" id="gestureName">
+            <label class="popup-label">Gesture Type:</label>
+            <div>
+                <label class="custom-radio">
+                    <input type="radio" name="gestureType" class="popup-radio" value="static" checked>
+                    <span class="checkmark"></span>
+                    Static
+                </label>
+                <label class="custom-radio">
+                    <input type="radio" name="gestureType" class="popup-radio" value="dynamic">
+                    <span class="checkmark"></span>
+                    Dynamic
+                </label>
+            </div>
+            <div class="popup-buttons">
+                <button type="button" class="btn btn-primary" onclick="saveGesture()">Save</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelGesture()">Cancel</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
