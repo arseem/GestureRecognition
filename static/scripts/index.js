@@ -47,12 +47,12 @@ window.addEventListener('resize', function() {
 });
 
  
-function showPopup() {
-    document.getElementById("popupContainer").style.display = "block";
+function showAddGesturePopup() {
+    document.getElementById("addGesturePopupContainer").style.display = "block";
 }
 
-function hidePopup() {
-    document.getElementById("popupContainer").style.display = "none";
+function hideAddGesturePopup() {
+    document.getElementById("addGesturePopupContainer").style.display = "none";
 }
 
 function saveGesture() {
@@ -80,12 +80,12 @@ function saveGesture() {
 
     // Perform any necessary actions with the captured gesture name and type
     window.location.href = "/record_gesture/" + gestureName + '/' + gestureType;
-    hidePopup();
+    hideAddGesturePopup();
 }
 
 function cancelGesture() {
     // Close the popup window without saving
-    hidePopup();
+    hideAddGesturePopup();
 }
 
 function recordGesture() {
@@ -94,7 +94,7 @@ function recordGesture() {
     gestureNameInput.value = "";
     gestureNameInput.placeholder = "Gesture Name";
 
-    showPopup();
+    showAddGesturePopup();
 }
 
 function updateFps() {
@@ -112,8 +112,6 @@ function updateInfo() {
     fetch('/get_info')
         .then(response => response.json())
         .then(data => {
-            console.log('KURWA');
-            console.log(data);
             const scoresDisplay = document.getElementById('gestureScores');
             const verdictDisplay = document.getElementById('verdictDisplay');
             const gestures_list = data.gestures;
@@ -134,6 +132,47 @@ function updateInfo() {
             scoresDisplay.innerHTML = output;
         });
 }
+
+function showEditGesturePopup() {
+    document.getElementById("editGesturePopupContainer").style.display = "block";
+}
+
+function hideEditGesturePopup() {
+    document.getElementById("editGesturePopupContainer").style.display = "none";
+}
+
+function cancelEditGesture() {
+    // Close the popup window without saving
+    hideEditGesturePopup();
+}
+
+function saveEditGesture() {
+    // Close the popup window without saving
+    hideEditGesturePopup();
+}
+
+function toggleDetails(event) {
+    const toggleButton = event.currentTarget;
+    const listItem = toggleButton.closest('.list-group-item');
+    const details = listItem.querySelector('.gesture-details');
+    const arrowIcon = toggleButton.querySelector('.fas');
+  
+    console.log('KESYEMS TU')
+
+    if (listItem.classList.contains('expanded')) {
+      // Details are currently shown, collapse them
+      details.style.maxHeight = '0';
+      listItem.classList.remove('expanded');
+      arrowIcon.classList.remove('fa-chevron-up');
+      arrowIcon.classList.add('fa-chevron-down');
+    } else {
+      // Details are currently hidden, expand them
+      details.style.maxHeight = details.scrollHeight + 'px';
+      listItem.classList.add('expanded');
+      arrowIcon.classList.remove('fa-chevron-down');
+      arrowIcon.classList.add('fa-chevron-up');
+    }
+ }
 
 // Call the updateInfo function every 0.1 seconds
 const fpsInterval = setInterval(updateFps, 100);

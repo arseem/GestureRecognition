@@ -208,3 +208,40 @@ body {
     border-radius: 5px;
     font-size: small;
 }
+
+.gesture-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+  }
+  
+.list-group-item.expanded .gesture-details {
+    max-height: 1000px; /* Adjust the value as per your needs */
+}  
+
+.toggle-button i.fa-chevron-down {
+    transform: rotate(0deg);
+    transition: transform 0.3s ease-in-out;
+}
+
+.toggle-button i.fa-chevron-up {
+    transform: rotate(360deg);
+    transition: transform 0.3s ease-in-out;
+}
+
+.toggle-button i {
+    font-size: 12px;
+    margin-left: 5px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.toggle-button {
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    font-size: 0;
+    float: right;
+}
