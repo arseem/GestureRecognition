@@ -2,6 +2,7 @@ import cv2
 import time
 import asyncio
 import numpy as np
+import threading
 
 import mediapipe as mp
 
@@ -17,7 +18,7 @@ class VideoProcessor:
         self._sequence = []
         self._last_index_position = None
         self._index_position_history = []
-        self.new_prediction = asyncio.Event()
+        self.new_prediction = threading.Event()
 
         self._track_threshold = config_instance.track_confidence_threshold
         self._change_threshold = config_instance.change_confidence_threshold
@@ -74,6 +75,20 @@ class VideoProcessor:
 
     def __check_sequence(self):
         if len(self._sequence) == self._sequence_length:
+            # get x and y coords from sequence
+            sequence = np.array(self._sequence).astype(np.float32)
+            x_coords = sequence[:, 0::3]
+            y_coords = sequence[:, 1::3]
+            max_x = x_coords.max()
+            min_x = x_coords.min()
+            max_y = y_coords.max()
+            min_y = y_coords.min()
+
+            # normalize sequence
+            sequence[:, 0::3] = (x_coords - min_x) / (max_x - min_x)
+            sequence[:, 1::3] = (y_coords - min_y) / (max_y - min_y)
+
+            self._sequence = list(sequence)
             self.__get_predictions()
             return True
         else:
