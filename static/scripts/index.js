@@ -1,5 +1,8 @@
 function toggleGesture(gesture_id) {
     var label = document.querySelector(`label[for=gesture${gesture_id}]`);
+    const gesture_name = label.textContent.trim();
+    fetch(`/toggle_gesture/${gesture_name}`)
+    
     if (label.classList.contains("gesture-on")) {
         label.classList.remove("gesture-on");
         label.classList.add("gesture-off");
@@ -7,11 +10,6 @@ function toggleGesture(gesture_id) {
         label.classList.remove("gesture-off");
         label.classList.add("gesture-on");
     }
-}
-
-function deleteGesture(gesture_id) {
-    // Function to delete a gesture, yet to be implemented
-    console.log("Deleting gesture with ID: " + gesture_id);
 }
 
 function toggleRecognition() {
@@ -114,6 +112,7 @@ function updateInfo() {
         .then(data => {
             const scoresDisplay = document.getElementById('gestureScores');
             const verdictDisplay = document.getElementById('verdictDisplay');
+            const verdictContainer = document.getElementById('gestureVerdict');
             const gestures_list = data.gestures;
             const scores_list = data.current_scores;
             const prediciton = data.current_prediction;
@@ -124,8 +123,10 @@ function updateInfo() {
             }
 
             if (prediciton) {
+                verdictContainer.style.backgroundColor = 'rgba(0, 255, 0, 0.4)';
                 verdictDisplay.textContent = `Detected: ${prediciton}`;
             } else {
+                verdictContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.4)';
                 verdictDisplay.textContent = 'No gesture detected';
             }
 
@@ -156,8 +157,6 @@ function toggleDetails(event) {
     const listItem = toggleButton.closest('.list-group-item');
     const details = listItem.querySelector('.gesture-details');
     const arrowIcon = toggleButton.querySelector('.fas');
-  
-    console.log('KESYEMS TU')
 
     if (listItem.classList.contains('expanded')) {
       // Details are currently shown, collapse them
@@ -167,13 +166,166 @@ function toggleDetails(event) {
       arrowIcon.classList.add('fa-chevron-down');
     } else {
       // Details are currently hidden, expand them
-      details.style.maxHeight = details.scrollHeight + 'px';
+      details.style.maxHeight = details.scrollHeight*2 + 'px';
       listItem.classList.add('expanded');
       arrowIcon.classList.remove('fa-chevron-down');
       arrowIcon.classList.add('fa-chevron-up');
     }
+
+    const gesture_name = listItem.querySelector('.gesture_label').textContent.trim();
+    const dropdown = listItem.querySelector('.action-dropdown');
+    fetch('/get_dropdown_options/' + gesture_name)
+    .then(response => response.json())
+        .then(data => {
+            console.log(JSON.stringify(data))
+            // Dynamically create and append option elements
+            data.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.value;
+                optionElement.text = option.text;
+                dropdown.appendChild(optionElement);
+            });
+        });
  }
+
+function updateSliderValue(slider) {
+    const sliderValue = slider.nextElementSibling;
+    sliderValue.textContent = slider.value;
+}
+
+function applyChanges(event) {
+    gestureName = event.currentTarget.closest('.list-group-item').querySelector('.gesture_label').textContent.trim();
+    const dropdown = event.currentTarget.closest('.list-group-item').querySelector('.action-dropdown');
+    const selectedValue = dropdown.options[dropdown.selectedIndex].value;
+    const slider = event.currentTarget.closest('.list-group-item').querySelector('.slider');
+    const sliderValue = slider.value;
+
+    fetch('/apply_changes/' + gestureName + '/' + selectedValue + '/' + sliderValue)
+    toggleDetails(event);
+}
+
+function cancelChanges(event) {
+    toggleDetails(event);
+}
+
+
+function handleActionChange(event) {
+    var selectedValue = event.currentTarget.value;
+    console.log(selectedValue)
+    const listItem = event.currentTarget.closest('.list-group-item');
+    currentGestureName = listItem.querySelector('.gesture_label').textContent.trim();
+
+    if (selectedValue === "RECORDNEW") {
+      // Show the popup
+      showRecordPopup(listItem);
+    } else {
+      // Perform other actions for different values
+      // Add your logic here
+    }
+}
+
+function showRecordPopup(listItem) {
+    // Display the popup container
+    var popupContainer = listItem.querySelector(".record-popup");
+    popupContainer.style.display = "block";
+}
+
+function startRecording() {
+    const recordField = document.getElementById("recordField_"+currentGestureName);
+    recordField.onclick = stopRecording;
+    recordField.textContent = "Press keys...";
+    keys = []
+    codes = []
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+}
+
+function updateRecordField() {
+    const recordField = document.getElementById("recordField_"+currentGestureName);
+    recordField.textContent = keys.map(key => {
+        if (key.action === 'down') {
+            return key.key + '↓'
+        } else {
+            return key.key + '↑'
+        }
+    }).join(' + ');
+}
+
+function stopRecording() {
+    document.removeEventListener('keydown', handleKeyDown);
+    document.removeEventListener('keyup', handleKeyUp);
+    const recordField = document.getElementById("recordField_"+currentGestureName);
+    recordField.onclick = startRecording;
+    recordField.textContent = "Recorded: " + recordField.textContent;
+}
+
+function saveCustomKeyCombination() {
+    const listItem = document.getElementById("listItem_"+currentGestureName)
+    const dropdown = listItem.querySelector('.action-dropdown');
+
+    var gestureName = listItem.querySelector('.gesture_label').textContent.trim();
+    console.log(gestureName);
+
+    const newOption = document.createElement('option');
+    newOption.value = JSON.stringify(codes);
+    newOption.text = 'CUSTOM';
+
+    for (var i = 0; i < dropdown.options.length; i++) {
+        if (dropdown.options[i].text === newOption.text) {
+            dropdown.remove(i);
+            break;
+        }
+    }
+
+    dropdown.appendChild(newOption);
+
+    for (var i = 0; i < dropdown.options.length; i++) {
+        if (dropdown.options[i].text === newOption.text) {
+            dropdown.selectedIndex = i;
+            break;
+        }
+    }
+  
+    // Hide the popup
+    hideRecordPopup();
+}
+
+function cancelRecordPopup() {
+    // Hide the popup
+    hideRecordPopup();
+}
+
+function hideRecordPopup() {
+    stopRecording();
+    const recordField = document.getElementById("recordField_"+currentGestureName);
+    recordField.textContent = "CLICK TO START RECORDING";
+    var popupContainer = document.getElementById("recordPopupContainer_"+currentGestureName);
+    popupContainer.style.display = "none";
+    currentGestureName = "";
+}
+
+function handleKeyDown(event) {
+    if (event.repeat) { return }
+    const key = event.key;
+    const code = event.code;
+    keys.push({key:key, action:'down'});
+    codes.push({key:code, action:'down'});
+    updateRecordField();
+}
+
+function handleKeyUp(event) {
+    if (event.repeat) { return }
+    const key = event.key;
+    const code = event.code;
+    keys.push({key:key, action:'up'});
+    codes.push({key:code, action:'up'});
+    updateRecordField();
+}
+  
 
 // Call the updateInfo function every 0.1 seconds
 const fpsInterval = setInterval(updateFps, 100);
 const dataInterval = setInterval(updateInfo, 100);
+var currentGestureName = "";
+var keys = [];
+var codes = [];

@@ -53,9 +53,23 @@ async def get_fps():
     })
 
 
-def toggle_gesture(gesture_id):
+async def get_dropdown_options(gesture_name):
+    current_action = {'value':'CURRENT', 'text':VIDEO_PROCESSOR.gestures[gesture_name].action}
+    output = [current_action] + GLOBAL_CONFIG.specific_actions_dropdown if current_action['text'] not in GLOBAL_CONFIG.specific_actions.keys() else GLOBAL_CONFIG.specific_actions_dropdown
+    return jsonify(output)
+
+
+async def apply_changes(gesture_name, action, detection_sensitivity):
+    VIDEO_PROCESSOR.gestures[gesture_name].action = action
+    VIDEO_PROCESSOR.gestures[gesture_name].detection_sensitivity = detection_sensitivity
+    return jsonify({'success': True})
+
+
+async def toggle_gesture(gesture_name):
+    gesture_id = gesture_list.index(gesture_name)
     gesture_on[gesture_id] = not gesture_on[gesture_id]
-    return str(gesture_on[gesture_id])
+    VIDEO_PROCESSOR.gestures[gesture_name].on = not VIDEO_PROCESSOR.gestures[gesture_name].on
+    return jsonify({'success': True})
 
 
 def record_gesture(gesture_name, gesture_type):

@@ -1,5 +1,6 @@
 body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    user-select: none;
 }
 
 .container {
@@ -72,6 +73,27 @@ body {
     max-height: calc(100vh - 480px);
     overflow-y: auto;
     transition: max-height 0.3s;
+    scrollbar-width: thin;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
 }
 
 .popup-container {
@@ -210,13 +232,44 @@ body {
 }
 
 .gesture-details {
+    margin-top: 10px;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease-in-out;
-  }
+}
+
+.action-title {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.detail-title {
+    font-weight: bold;
+}
+
+.action-container {
+    margin-bottom: 20px;
+}
   
-.list-group-item.expanded .gesture-details {
+.list-group-item.expanded {
     max-height: 1000px; /* Adjust the value as per your needs */
+    background-color: rgb(248, 248, 248); /* Change background color when expanded */
+    transition: background-color 0.3s ease-in-out;
+}
+
+.list-group-item.expanded:hover {
+    background-color: rgb(222, 222, 228); /* Change background color when expanded */
+    transition: background-color 0.3s ease-in-out;
+}
+
+.list-group-item:hover {
+    background-color: rgb(248, 248, 248); /* Change background color when expanded */
+    transition: background-color 0.3s ease-in-out;
+}
+
+.list-group-item {
+    background-color:white;
+    transition: background-color 0.3s ease-in-out;
 }  
 
 .toggle-button i.fa-chevron-down {
@@ -244,4 +297,61 @@ body {
     margin-bottom: 0px;
     font-size: 0;
     float: right;
+}
+
+.slider-container {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+.slider-title {
+    margin-right: 10px;
+}
+
+.slider {
+    flex-grow: 1;
+}
+
+.slider-value {
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.action-container {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+.action-title {
+    margin-right: 10px;
+}
+
+.action-dropdown {
+    flex-grow: 1;
+}
+
+.apply-changes-container {
+    display: flex;
+    align-items: center;
+}
+
+.apply-button,
+.cancel-button {
+    font-size: small;
+    flex-grow: 1;
+    margin-right: 10px;
+    margin-left: 10px;
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+.record-field {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    max-height: 200px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column-reverse;
 }

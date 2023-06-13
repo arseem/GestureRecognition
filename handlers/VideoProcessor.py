@@ -5,6 +5,8 @@ import numpy as np
 
 import mediapipe as mp
 
+from handlers.Gesture import Gesture
+
 
 class VideoProcessor:
 
@@ -28,10 +30,20 @@ class VideoProcessor:
         self._current_prediciton = None
         self.current_prediction = None
 
+
     def __get_info_from_model_loader(self, model_loader_instance):
         self._model = model_loader_instance.model
         self._gestures = model_loader_instance._model_info['gestures']
+        self.gestures = {}
+
+        for i in range(len(self._gestures)):
+            if 'gestures_action' in model_loader_instance._model_info.keys():
+                self.gestures[self._gestures[i]] = Gesture(self._gestures[i], model_loader_instance._model_info['gestures_action'][i], model_loader_instance._model_info['gestures_on'][i], model_loader_instance._model_info['gestures_detection_sensitivity'][i])
+            else:
+                self.gestures[self._gestures[i]] = Gesture(self._gestures[i])
+
         self._sequence_length = model_loader_instance._model_info['num_frames']
+
 
     def __get_predictions(self):
         input_details = self._model.get_input_details()
@@ -42,6 +54,7 @@ class VideoProcessor:
         self.current_scores = self._model.get_tensor(output_details[0]['index'])[0]
         self._current_prediciton = self._gestures[np.argmax(self.current_scores)]
         self.new_prediction.set()
+
     
     def __prepare_data(self, data):
         current_landmarks = []
@@ -58,6 +71,7 @@ class VideoProcessor:
             self._sequence = self._sequence[1:]
             self._sequence.append(current_landmarks)
 
+
     def __check_sequence(self):
         if len(self._sequence) == self._sequence_length:
             self.__get_predictions()
@@ -65,6 +79,7 @@ class VideoProcessor:
         else:
             self.current_scores = [0.0 for _ in range(len(self._gestures))]
             return False
+
 
     def process_feed(self, camera_feed, width=640, height=480):
         mp_drawing = mp.solutions.drawing_utils
@@ -82,7 +97,6 @@ class VideoProcessor:
         ) as hands:
             
             while camera_feed.isOpened():
-                predictions_task = None
                 self._last_gesture = None
                 _, frame = cam.read()
                 image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
