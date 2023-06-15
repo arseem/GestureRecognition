@@ -4,15 +4,15 @@
             "name": "index_up",
             "action": "MOVE",
             "on": true,
-            "detection_sensitivity": 0.69,
-            "tracking_sensitivity": 0.31,
+            "detection_sensitivity": 0.84,
+            "tracking_sensitivity": 0.6,
             "one_shot": false
         },
         {
             "name": "L",
             "action": "LEFT",
             "on": true,
-            "detection_sensitivity": 0.7,
+            "detection_sensitivity": 0.84,
             "tracking_sensitivity": 1.0,
             "one_shot": true
         },
@@ -20,16 +20,16 @@
             "name": "horns",
             "action": "DRAG",
             "on": true,
-            "detection_sensitivity": 0.7,
-            "tracking_sensitivity": 0.31,
+            "detection_sensitivity": 0.53,
+            "tracking_sensitivity": 0.27,
             "one_shot": false
         },
         {
             "name": "index_middle_up",
             "action": "SCROLL",
             "on": true,
-            "detection_sensitivity": 0.8,
-            "tracking_sensitivity": 0.2,
+            "detection_sensitivity": 0.39,
+            "tracking_sensitivity": 0.12,
             "one_shot": false
         },
         {
@@ -44,26 +44,26 @@
             "name": "hand",
             "action": "playpause",
             "on": true,
-            "detection_sensitivity": 0.81,
+            "detection_sensitivity": 0.75,
             "tracking_sensitivity": 0.11,
             "one_shot": true
         },
         {
             "name": "V",
-            "action": "none",
-            "on": false,
-            "detection_sensitivity": 0.5,
-            "tracking_sensitivity": 0.5,
+            "action": "[{\"key\":\"MetaLeft\",\"action\":\"down\"},{\"key\":\"PrintScreen\",\"action\":\"up\"},{\"key\":\"MetaLeft\",\"action\":\"up\"}]",
+            "on": true,
+            "detection_sensitivity": 0.51,
+            "tracking_sensitivity": 0.39,
             "one_shot": true
         },
         {
             "name": "thumb_up",
-            "action": "none",
-            "on": false,
+            "action": "browserrefresh",
+            "on": true,
             "detection_sensitivity": 0.5,
             "tracking_sensitivity": 0.5,
             "one_shot": true
         }
     ],
-    "model_path": "./models/default\\models\\default.tflite"
+    "model_path": "./models/model_2023-06-15_15-52-35\\models\\model_2023-06-15_15-52-35_checkpoint.tflite"
 }

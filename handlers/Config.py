@@ -39,7 +39,7 @@ class Config:
 
     # Transfer learning
     freeze_weights: bool = False
-    epochs: int = 200
+    epochs: int = 100
 
 
     #  --- pyautogui settings --------------------------------------------------------------------------------------------
