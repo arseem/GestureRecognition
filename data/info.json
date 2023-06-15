@@ -1,0 +1,14 @@
+{
+    "gestures": [
+        "cursor",
+        "left_click",
+        "drag",
+        "scroll",
+        "volume_up",
+        "volume_down",
+        "null",
+        "start",
+        "swipe_right"
+    ],
+    "num_frames": 15
+}

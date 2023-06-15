@@ -13,7 +13,7 @@ class ModelLoader:
             # Get the latest models
             path_model = max(self._model_folders, key=os.path.getmtime)
         else:
-            path_model = model_path
+            path_model = '/'.join(model_path.split('/')[:-2])
         
         self.available_model_folders = [os.path.basename(d) for d in self._model_folders]
         self.model_folder_name = os.path.basename(path_model)

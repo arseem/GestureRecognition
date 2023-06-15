@@ -1,31 +1,71 @@
-function toggleGesture(gesture_id) {
+async function toggleGesture(button, gesture_id) {
     var label = document.querySelector(`label[for=gesture${gesture_id}]`);
     const gesture_name = label.textContent.trim();
-    fetch(`/toggle_gesture/${gesture_name}`)
-    
-    if (label.classList.contains("gesture-on")) {
-        label.classList.remove("gesture-on");
-        label.classList.add("gesture-off");
-    } else {
-        label.classList.remove("gesture-off");
-        label.classList.add("gesture-on");
+    fetch(`/toggle_gesture/${gesture_name}`).then(response => {
+        response.json()
+        .then(response => {
+            if (response.success) {
+                if (label.classList.contains("gesture-on")) {
+                    label.classList.remove("gesture-on");
+                    label.classList.add("gesture-off");
+                } else {
+                    label.classList.remove("gesture-off");
+                    label.classList.add("gesture-on");
+                }
+            }
+            else {
+                button.checked = false;
+                gestureLabel = button.parentElement.querySelector(".gesture_label");
+                gestureLabel.style.color = "red";
+                if (!gestureLabel.textContent.includes("NOT LEARNED")) {
+                    gestureLabel.textContent = gestureLabel.textContent + " (NOT LEARNED)";
+                }
+            }
+        });
+    });
+}
+
+async function toggleRecognition(button) {
+    if (button.textContent == "Toggle Recognition OFF") {
+        button.textContent = "Toggle Recognition ON";
+        button.classList.remove("btn-danger");
+        button.classList.add("btn-success");
     }
+    else {
+        button.textContent = "Toggle Recognition OFF";
+        button.classList.add("btn-danger");
+        button.classList.remove("btn-success");
+    }
+
+    fetch('/toggle_recognition')
 }
 
-function toggleRecognition() {
-    alert("Not implemented yet!");
+async function hideGui(button) {
+    if (button.textContent == "Enable Overlay") {
+        document.getElementById("gui-slider-container").style.opacity = "1";
+        button.textContent = "Disable Overlay";
+    } else {
+        document.getElementById("gui-slider-container").style.opacity = "0";
+        button.textContent = "Enable Overlay";
+    }
+
+    fetch('/toggle_overlay')
 }
 
-function hideGui() {
-    alert("Not implemented yet!");
+async function updateOverlaySize(slider) {
+    fetch('/update_overlay_size/' +  slider.value);
 }
 
-function adjustGesturesListHeight() {
+async function updateOverlayOpacity(slider) {
+    fetch('/update_overlay_opacity/' + slider.value);
+}
+
+async function adjustGesturesListHeight() {
     var cameraFeedHeight = document.querySelector(".camera-feed").offsetHeight;
     var gesturesList = document.getElementById("gesturesList");
     gesturesList.style.maxHeight = cameraFeedHeight + "px";
 }
-function adjustCameraFeedSize() {
+async function adjustCameraFeedSize() {
     var cameraFeed = document.querySelector(".camera-feed");
     var cameraFeedWidth = cameraFeed.offsetWidth;
     var cameraFeedHeight = cameraFeed.offsetHeight;
@@ -34,26 +74,26 @@ function adjustCameraFeedSize() {
     videoFrame.src = "/video_feed?width=" + cameraFeedWidth + "&height=" + cameraFeedHeight;
   }
 
-window.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', async function() {
     adjustGesturesListHeight();
     adjustCameraFeedSize();
 });
   
-window.addEventListener('resize', function() {
+window.addEventListener('resize', async function() {
     adjustGesturesListHeight();
     adjustCameraFeedSize();
 });
 
  
-function showAddGesturePopup() {
+async function showAddGesturePopup() {
     document.getElementById("addGesturePopupContainer").style.display = "block";
 }
 
-function hideAddGesturePopup() {
+async function hideAddGesturePopup() {
     document.getElementById("addGesturePopupContainer").style.display = "none";
 }
 
-function saveGesture() {
+async function saveGesture() {
     var gestureNameInput = document.getElementById("gestureName");
     var gestureName = gestureNameInput.value.trim();
     var gestureType = document.querySelector('input[name="gestureType"]:checked').value;
@@ -81,12 +121,12 @@ function saveGesture() {
     hideAddGesturePopup();
 }
 
-function cancelGesture() {
+async function cancelGesture() {
     // Close the popup window without saving
     hideAddGesturePopup();
 }
 
-function recordGesture() {
+async function recordGesture() {
     var gestureNameInput = document.getElementById("gestureName");
     gestureNameInput.classList.remove("error");
     gestureNameInput.value = "";
@@ -95,7 +135,7 @@ function recordGesture() {
     showAddGesturePopup();
 }
 
-function updateFps() {
+async function updateFps() {
     fetch('/get_fps')
         .then(response => response.json())
         .then(data => {
@@ -106,7 +146,7 @@ function updateFps() {
         });
 }
 
-function updateInfo() {
+async function updateInfo() {
     fetch('/get_info')
         .then(response => response.json())
         .then(data => {
@@ -116,6 +156,7 @@ function updateInfo() {
             const gestures_list = data.gestures;
             const scores_list = data.current_scores;
             const prediciton = data.current_prediction;
+            const needs_training = data.needs_training;
 
             output = "";
             for (var i = 0; i < gestures_list.length; i++) {
@@ -130,33 +171,22 @@ function updateInfo() {
                 verdictDisplay.textContent = 'No gesture detected';
             }
 
+            if (needs_training) {
+                document.getElementById('trainingButton').style.display = 'block';
+            } else {
+                document.getElementById('trainingButton').style.display = 'none';
+            }
+
             scoresDisplay.innerHTML = output;
         });
 }
 
-function showEditGesturePopup() {
-    document.getElementById("editGesturePopupContainer").style.display = "block";
-}
-
-function hideEditGesturePopup() {
-    document.getElementById("editGesturePopupContainer").style.display = "none";
-}
-
-function cancelEditGesture() {
-    // Close the popup window without saving
-    hideEditGesturePopup();
-}
-
-function saveEditGesture() {
-    // Close the popup window without saving
-    hideEditGesturePopup();
-}
-
-function toggleDetails(event) {
+async function toggleDetails(event) {
     const toggleButton = event.currentTarget;
     const listItem = toggleButton.closest('.list-group-item');
     const details = listItem.querySelector('.gesture-details');
     const arrowIcon = toggleButton.querySelector('.fas');
+    var checkmarks = details.querySelectorAll('.details-radio');
 
     if (listItem.classList.contains('expanded')) {
       // Details are currently shown, collapse them
@@ -170,46 +200,61 @@ function toggleDetails(event) {
       listItem.classList.add('expanded');
       arrowIcon.classList.remove('fa-chevron-down');
       arrowIcon.classList.add('fa-chevron-up');
-    }
 
-    const gesture_name = listItem.querySelector('.gesture_label').textContent.trim();
-    const dropdown = listItem.querySelector('.action-dropdown');
-    fetch('/get_dropdown_options/' + gesture_name)
-    .then(response => response.json())
-        .then(data => {
-            console.log(JSON.stringify(data))
-            // Dynamically create and append option elements
-            data.forEach(option => {
-                const optionElement = document.createElement('option');
-                optionElement.value = option.value;
-                optionElement.text = option.text;
-                dropdown.appendChild(optionElement);
-            });
-        });
+      const gesture_name = listItem.querySelector('.gesture_label').textContent.trim();
+      const dropdown = listItem.querySelector('.action-dropdown');
+      fetch('/get_dropdown_options/' + gesture_name)
+      .then(response => response.json())
+          .then(data => {
+              // Dynamically create and append option elements
+              const dropdown_data = data[1];
+              const type = data[0];
+              dropdown_data.forEach(option => {
+                  const optionElement = document.createElement('option');
+                  optionElement.value = option.value;
+                  optionElement.text = option.text;
+                  dropdown.appendChild(optionElement);
+              });  
+              if (!type) {
+                  checkmarks[1].checked = true;
+              } else {
+                  checkmarks[0].checked = true;
+              }  
+          });
+    }
  }
 
-function updateSliderValue(slider) {
+async function updateSliderValue(slider) {
     const sliderValue = slider.nextElementSibling;
     sliderValue.textContent = slider.value;
 }
 
-function applyChanges(event) {
+async function applyChanges(event) {
     gestureName = event.currentTarget.closest('.list-group-item').querySelector('.gesture_label').textContent.trim();
     const dropdown = event.currentTarget.closest('.list-group-item').querySelector('.action-dropdown');
     const selectedValue = dropdown.options[dropdown.selectedIndex].value;
-    const slider = event.currentTarget.closest('.list-group-item').querySelector('.slider');
-    const sliderValue = slider.value;
+    const sliderDet = event.currentTarget.closest('.list-group-item').querySelector('.slider-det');
+    const sliderDetValue = sliderDet.value;
+    const sliderTrack = event.currentTarget.closest('.list-group-item').querySelector('.slider-track');
+    const sliderTrackValue = sliderTrack.value;
+    const checkmarks = event.currentTarget.closest('.list-group-item').querySelector('.gesture-details').querySelectorAll('.details-radio');
 
-    fetch('/apply_changes/' + gestureName + '/' + selectedValue + '/' + sliderValue)
+    if (checkmarks[0].checked) {
+        mode = "1";
+    } else {
+        mode = "0";
+    }
+
+    fetch('/apply_changes/' + gestureName + '/' + selectedValue + '/' + sliderDetValue + '/' + sliderTrackValue + '/' + mode)
     toggleDetails(event);
 }
 
-function cancelChanges(event) {
+async function cancelChanges(event) {
     toggleDetails(event);
 }
 
 
-function handleActionChange(event) {
+async function handleActionChange(event) {
     var selectedValue = event.currentTarget.value;
     console.log(selectedValue)
     const listItem = event.currentTarget.closest('.list-group-item');
@@ -224,13 +269,13 @@ function handleActionChange(event) {
     }
 }
 
-function showRecordPopup(listItem) {
+async function showRecordPopup(listItem) {
     // Display the popup container
     var popupContainer = listItem.querySelector(".record-popup");
     popupContainer.style.display = "block";
 }
 
-function startRecording() {
+async function startRecording() {
     const recordField = document.getElementById("recordField_"+currentGestureName);
     recordField.onclick = stopRecording;
     recordField.textContent = "Press keys...";
@@ -240,7 +285,7 @@ function startRecording() {
     document.addEventListener('keyup', handleKeyUp);
 }
 
-function updateRecordField() {
+async function updateRecordField() {
     const recordField = document.getElementById("recordField_"+currentGestureName);
     recordField.textContent = keys.map(key => {
         if (key.action === 'down') {
@@ -251,7 +296,7 @@ function updateRecordField() {
     }).join(' + ');
 }
 
-function stopRecording() {
+async function stopRecording() {
     document.removeEventListener('keydown', handleKeyDown);
     document.removeEventListener('keyup', handleKeyUp);
     const recordField = document.getElementById("recordField_"+currentGestureName);
@@ -259,7 +304,7 @@ function stopRecording() {
     recordField.textContent = "Recorded: " + recordField.textContent;
 }
 
-function saveCustomKeyCombination() {
+async function saveCustomKeyCombination() {
     const listItem = document.getElementById("listItem_"+currentGestureName)
     const dropdown = listItem.querySelector('.action-dropdown');
 
@@ -290,12 +335,12 @@ function saveCustomKeyCombination() {
     hideRecordPopup();
 }
 
-function cancelRecordPopup() {
+async function cancelRecordPopup() {
     // Hide the popup
     hideRecordPopup();
 }
 
-function hideRecordPopup() {
+async function hideRecordPopup() {
     stopRecording();
     const recordField = document.getElementById("recordField_"+currentGestureName);
     recordField.textContent = "CLICK TO START RECORDING";
@@ -304,7 +349,7 @@ function hideRecordPopup() {
     currentGestureName = "";
 }
 
-function handleKeyDown(event) {
+async function handleKeyDown(event) {
     if (event.repeat) { return }
     const key = event.key;
     const code = event.code;
@@ -313,7 +358,7 @@ function handleKeyDown(event) {
     updateRecordField();
 }
 
-function handleKeyUp(event) {
+async function handleKeyUp(event) {
     if (event.repeat) { return }
     const key = event.key;
     const code = event.code;
@@ -321,11 +366,59 @@ function handleKeyUp(event) {
     codes.push({key:code, action:'up'});
     updateRecordField();
 }
-  
 
-// Call the updateInfo function every 0.1 seconds
+async function saveState() {
+    fetch('/save_state')
+}
+
+async function loadState() {
+    fetch('/load_state').then(response => location.reload())
+}
+
+async function startRecordingGesture() {
+    var gestureNameInput = document.getElementById("gestureName");
+    var gestureName = gestureNameInput.value;
+    console.log(gestureName)
+    if (gestureName === "") {
+        alert("Please enter a name for the gesture");
+        return;
+    }
+
+    fetch('/start_recording/' + gestureName).then(response => {
+        response.json().then(data => {
+            if (data.status === 200) {
+                hideAddGesturePopup();
+                document.querySelectorAll(".cam-overlay").forEach(x => x.style.display = "none");
+
+                var videoFrame = document.getElementById("videoFrame");
+                videoFrame.src = videoFrame.src;
+
+                recordingInterval = setInterval(checkRecordingState, 500);
+            } else {
+                alert("Gesture with the same name already exists");
+            }
+        });
+    });
+}
+
+function checkRecordingState() {
+    fetch('/is_recording_done').then(response => {
+        response.json().then(data => {
+            if (data.status === 200) {
+                fetch('/stop_recording').then(response => {
+                    clearInterval(recordingInterval);
+                    document.querySelectorAll(".cam-overlay").forEach(x => x.style.display = "block");
+                    location.reload();
+                });
+            }
+        });
+    });
+}
+
+// Call the updateInfo async function every 0.1 seconds
 const fpsInterval = setInterval(updateFps, 100);
 const dataInterval = setInterval(updateInfo, 100);
+var recordingInterval = null;
 var currentGestureName = "";
 var keys = [];
 var codes = [];

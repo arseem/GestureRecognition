@@ -13,6 +13,27 @@ body {
     margin-top: 10px;
 }
 
+.training-button {
+    display: none;
+}
+
+.state-button {
+    margin-top: 5px;
+    width: 100%;
+}
+
+.hide-gui-button {
+    height: 41%;
+}
+
+.slider-group {
+    margin-top: 10px;
+    font-size: small;
+    height: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
 .gesture-off {
     color: #808080;
 }
@@ -53,6 +74,10 @@ body {
     height: 100%;
     border-radius: 5px;
     overflow: hidden;
+}
+
+.cam-overlay {
+    display: block;
 }
 
 .title {
@@ -306,7 +331,11 @@ body {
 }
 
 .slider-title {
-    margin-right: 10px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-size: small;
+    text-align:center;
+    flex-grow: 1;
 }
 
 .slider {

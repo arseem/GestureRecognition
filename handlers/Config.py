@@ -8,12 +8,16 @@ class Config:
 
     datasets_path: str = './data/'
     models_path: str = './models/'
+    states_path: str = './states/'
     default_model = None
 
 
     #  --- Data capturing settings --------------------------------------------------------------------------------------
 
     dataset_name = 'data_{timestamp}'
+
+    num_frames = 15
+    num_takes = 10
 
 
     #  --- Detection settings -------------------------------------------------------------------------------------------
@@ -39,13 +43,17 @@ class Config:
         { 'value': 'volumeup', 'text': '(Volume) Up' },
         { 'value': 'volumedown', 'text': '(Volume) Down' },
         { 'value': 'volumemute', 'text': '(Volume) Mute' },
-        { 'value': 'apps', 'text': 'Apps' },
         { 'value': 'browserback', 'text': '(Browser) Back' },
         { 'value': 'browserforward', 'text': '(Browser) Forward' },
         { 'value': 'browserrefresh', 'text': '(Browser) Refresh' },
         { 'value': 'playpause', 'text': '(Media) Play/Pause' },
         { 'value': 'nexttrack', 'text': '(Media) Next Track' },
         { 'value': 'prevtrack', 'text': '(Media) Prev Track' },
+        { 'value': 'MOVE', 'text': '(Mouse) Move Cursor' },
+        { 'value': 'LEFT', 'text': '(Mouse) Left Click' },
+        { 'value': 'RIGHT', 'text': '(Mouse) Right Click' },
+        { 'value': 'DRAG', 'text': '(Mouse) Drag (Hold left + move)' },
+        { 'value': 'SCROLL', 'text': '(Mouse) Scroll' },
     ]
 
     specific_actions = {action['value']: action['text'] for action in specific_actions_dropdown}
