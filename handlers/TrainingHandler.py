@@ -118,7 +118,7 @@ class TrainingHandler:
         X_train, X_test, y_train, y_test = self._get_training_data()
         model = self._get_model()
 
-        model.fit(X_train, y_train, epochs=100, validation_data=(X_test, y_test), callbacks=[checkpoint_loss, TensorBoard(log_dir=f'./hand_pose_estimation/models/{model_name}/logs/')])
+        model.fit(X_train, y_train, epochs=self._config.epochs, validation_data=(X_test, y_test), callbacks=[checkpoint_loss, TensorBoard(log_dir=f'./hand_pose_estimation/models/{model_name}/logs/')])
         
         # Evaluate model
         print('----------------------------------------')

@@ -160,14 +160,14 @@ class ActionHandler:
 
                 for action in self._keys_to_press:
                     if action['action'] == 'down':
-                        keys_down.append(self._js_keys[action['key']])
-                        pyautogui.keyDown(self._js_keys[action['key']])
+                        keys_down.append(self._js_keys[action['key']] if action['key'] in self._js_keys else action['key'])
+                        pyautogui.keyDown(self._js_keys[action['key']] if action['key'] in self._js_keys else action['key'], _pause=False)
                     elif action['action'] == 'up':
                         try:
-                            keys_down.remove(self._js_keys[action['key']])
+                            keys_down.remove(self._js_keys[action['key']] if action['key'] in self._js_keys else action['key'])
                         except ValueError:
-                            pyautogui.keyDown(self._js_keys[action['key']])
-                        pyautogui.keyUp(self._js_keys[action['key']])
+                            pyautogui.keyDown(self._js_keys[action['key']] if action['key'] in self._js_keys else action['key'], _pause=False)
+                        pyautogui.keyUp(self._js_keys[action['key']] if action['key'] in self._js_keys else action['key'], _pause=False)
 
                 for key in keys_down:
                     pyautogui.keyUp(key)

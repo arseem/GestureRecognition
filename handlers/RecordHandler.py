@@ -69,8 +69,6 @@ class RecordHandler:
             yield (b'--frame\r\n'
                 b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n\r\n')
             
-            cv2.waitKey()
-
             for take in range(self._num_takes):
                 n_frame = 0
                 cv2.putText(image_copy, f"Preparing for take {take+1}", (10, 55), cv2.FONT_HERSHEY_PLAIN, 1, (0,255,0), 2)
@@ -132,7 +130,7 @@ class RecordHandler:
                     if cv2.waitKey(5) & 0xFF == ord('q'):
                         break
 
-            np.save(f"{self._data_path}/{self._gesture_name}.npy", gestures_data)\
+            np.save(f"{self._data_path}/{self._gesture_name}.npy", np.concatenate((gestures_data, gestures_data)))
             
             with open(self._info_path, 'r+') as f:
                 info = json.load(f)

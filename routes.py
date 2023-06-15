@@ -107,16 +107,17 @@ async def toggle_recognition():
     
 
 async def get_dropdown_options(gesture_name):
+    current_action = 'CUSTOM'
     for gesture in GLOBAL_CONFIG.specific_actions_dropdown:
         if gesture['value'] == CURRENT_STATE.gestures[gesture_name].action:
             current_action = gesture['text']
-        else:
-            current_action = 'CUSTOM'
+            break
+            
 
     current_action = {'value':CURRENT_STATE.gestures[gesture_name].action, 'text':str(current_action)}
     dropdown = [current_action] + GLOBAL_CONFIG.specific_actions_dropdown if current_action['text'] not in GLOBAL_CONFIG.specific_actions.keys() else GLOBAL_CONFIG.specific_actions_dropdown
     gesture_type = CURRENT_STATE.gestures[gesture_name].one_shot
-    return jsonify(gesture_type, dropdown)
+    return jsonify(gesture_type, dropdown, CURRENT_STATE.gestures[gesture_name].detection_sensitivity, CURRENT_STATE.gestures[gesture_name].tracking_sensitivity)
 
 
 async def apply_changes(gesture_name, action, detection_sensitivity, tracking_sensitivity, mode):
@@ -134,12 +135,6 @@ async def toggle_gesture(gesture_name):
 
     else:
         return jsonify({'success': False})
-
-
-def record_gesture(gesture_name, gesture_type):
-    # Record the gesture here...
-    print("Recording gesture: " + gesture_name + " of type: " + gesture_type)
-    return "Recording gesture: " + gesture_name + " of type: " + gesture_type
 
 
 async def load_state():
@@ -199,4 +194,6 @@ async def is_training_done():
 
 async def finish_training():
     MODEL_LOADER.switch_model(CURRENT_STATE.model_path)
+    VIDEO_PROCESSOR._get_info_from_state(CURRENT_STATE)
+    VIDEO_PROCESSOR._get_model_from_loader(MODEL_LOADER)
     return jsonify({'success': True})

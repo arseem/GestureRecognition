@@ -38,7 +38,8 @@ class Config:
     #  --- Training settings --------------------------------------------------------------------------------------------
 
     # Transfer learning
-    freeze_weights: bool = True
+    freeze_weights: bool = False
+    epochs: int = 200
 
 
     #  --- pyautogui settings --------------------------------------------------------------------------------------------

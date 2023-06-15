@@ -220,6 +220,19 @@ async function toggleDetails(event) {
               }
               const dropdown_data = data[1];
               const type = data[0];
+
+              const detection_threshold = data[2];
+              const slider = listItem.querySelector('.slider-det');
+              const sliderValue = slider.nextElementSibling;
+              slider.value = detection_threshold;
+              sliderValue.textContent = detection_threshold;
+
+              const trakcing_threshold = data[3];
+              const slider2 = listItem.querySelector('.slider-track');
+              const sliderValue2 = slider2.nextElementSibling;
+              slider2.value = trakcing_threshold;
+              sliderValue2.textContent = trakcing_threshold;
+
               dropdown_data.forEach(option => {
                   const optionElement = document.createElement('option');
                   optionElement.value = option.value;
@@ -427,10 +440,15 @@ function checkRecordingState() {
 }
 
 async function trainNewModel(button) {
-    fetch('/start_training')
-    button.textContent = "Training in progress...";
-    button.disabled = true;
-    trainingInterval = setInterval(checkTrainingState, 500);
+    fetch('/start_training').then(response => {
+        response.json().then(data => {
+            if (data.success) {
+                button.textContent = "Training in progress...";
+                button.disabled = true;
+                trainingInterval = setInterval(checkTrainingState, 2000);
+            }
+        });
+    });
 }
 
 async function checkTrainingState() {
@@ -438,10 +456,10 @@ async function checkTrainingState() {
         response.json().then(data => {
             if (data.status === 200) {
                 fetch('/finish_training').then(response => {
-                    clearInterval(trainingInterval);
-                    document.getElementById("trainButton").style.display = 'none';
-                    document.getElementById("trainButton").textContent = 'Model outdated, click to train';
+                    document.getElementById("trainingButton").style.display = 'none';
+                    document.getElementById("trainingButton").textContent = 'Model outdated, click to train';
                     location.reload();
+                    clearInterval(trainingInterval);
                 });
             }
         });

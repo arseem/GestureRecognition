@@ -11,8 +11,8 @@ class VideoProcessor:
 
     def __init__(self, model_loader_instance, config_instance, state_instance, record_handler_instance):
         self._record_handler = record_handler_instance
-        self.__get_model_from_loader(model_loader_instance)
-        self.__get_info_from_state(state_instance)
+        self._get_model_from_loader(model_loader_instance)
+        self._get_info_from_state(state_instance)
         self.width = 640
         self.height = 480
         self._sequence = []
@@ -38,12 +38,12 @@ class VideoProcessor:
         self.detection_enabled = True
 
 
-    def __get_model_from_loader(self, model_loader_instance):
+    def _get_model_from_loader(self, model_loader_instance):
         self._model = model_loader_instance.model
         self._sequence_length = model_loader_instance._model_info['num_frames']
 
 
-    def __get_info_from_state(self, state_instance):
+    def _get_info_from_state(self, state_instance):
         self._gestures = [gesture for gesture in state_instance.gestures]
         self.gestures = state_instance.gestures
 
@@ -116,7 +116,7 @@ class VideoProcessor:
         currentTime = 0
         previousTime = 0
 
-        cam = cv2.VideoCapture(0)
+        cam = camera_feed
         with mp_hands.Hands(
             min_detection_confidence=0.5,
             min_tracking_confidence=0.5,

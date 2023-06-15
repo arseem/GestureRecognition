@@ -1,0 +1,53 @@
+{
+    "gestures": [
+        {
+            "name": "index_up",
+            "action": "MOVE",
+            "on": true,
+            "detection_sensitivity": 0.69,
+            "tracking_sensitivity": 0.31,
+            "one_shot": false
+        },
+        {
+            "name": "L",
+            "action": "LEFT",
+            "on": true,
+            "detection_sensitivity": 0.7,
+            "tracking_sensitivity": 1.0,
+            "one_shot": true
+        },
+        {
+            "name": "horns",
+            "action": "DRAG",
+            "on": true,
+            "detection_sensitivity": 0.7,
+            "tracking_sensitivity": 0.31,
+            "one_shot": false
+        },
+        {
+            "name": "index_middle_up",
+            "action": "SCROLL",
+            "on": true,
+            "detection_sensitivity": 0.8,
+            "tracking_sensitivity": 0.2,
+            "one_shot": false
+        },
+        {
+            "name": "fist",
+            "action": "volumemute",
+            "on": true,
+            "detection_sensitivity": 0.8,
+            "tracking_sensitivity": 0.1,
+            "one_shot": true
+        },
+        {
+            "name": "hand",
+            "action": "playpause",
+            "on": true,
+            "detection_sensitivity": 0.81,
+            "tracking_sensitivity": 0.11,
+            "one_shot": true
+        }
+    ],
+    "model_path": "./models/default\\models\\default.tflite"
+}
