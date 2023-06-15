@@ -35,6 +35,12 @@ class Config:
     change_confidence_threshold: float = 0.6
 
 
+    #  --- Training settings --------------------------------------------------------------------------------------------
+
+    # Transfer learning
+    freeze_weights: bool = True
+
+
     #  --- pyautogui settings --------------------------------------------------------------------------------------------
 
     specific_actions_dropdown = [

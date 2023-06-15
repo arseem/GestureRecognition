@@ -8,7 +8,22 @@
         "volume_down",
         "null",
         "start",
-        "swipe_right"
+        "swipe_right",
+        "swipe_left",
+        "swipe_left",
+        "pinch",
+        "pinch2",
+        "pinch2",
+        "pinch2",
+        "pinch2",
+        "pinch2",
+        "pinch2",
+        "pinch2",
+        "fist",
+        "hand",
+        "pinch",
+        "hand",
+        "fist"
     ],
     "num_frames": 15
 }

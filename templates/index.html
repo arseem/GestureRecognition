@@ -62,7 +62,7 @@
                                 <input type="checkbox" class="custom-control-input" id="gesture{{ i }}"
                                     {% if gesture_on[i] %}checked{% endif %}
                                     onchange="toggleGesture(this, {{ i }})">
-                                <label class="custom-control-label {% if not gesture_on[i] %}gesture-off{% else %}gesture-on{% endif %} gesture_label" for="gesture{{ i }}">{{ gesture_list[i] }}</label>
+                                <label class="custom-control-label {% if not gesture_on[i] %}gesture-off{% else %}gesture-on{% endif %} gesture_label" for="gesture{{ i }}">{{ gesture_list[i] }}</label><span id="not-learned"></span>
                                 <button class="btn btn-link toggle-button" onclick="toggleDetails(event)">
                                     <i class="fas fa-chevron-down"></i>
                                 </button>         

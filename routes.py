@@ -1,4 +1,6 @@
 import cv2
+import os
+import threading
 
 import tkinter as tk
 from tkinter import filedialog
@@ -13,6 +15,7 @@ from handlers.Overlay import Overlay
 from handlers.State import State
 from handlers.RecordHandler import RecordHandler
 from handlers.Gesture import Gesture
+from handlers.TrainingHandler import TrainingHandler
 
 
 GLOBAL_CONFIG = Config()
@@ -20,8 +23,9 @@ CURRENT_STATE = State(GLOBAL_CONFIG)
 RECORD_HANDLER = RecordHandler(GLOBAL_CONFIG)
 MODEL_LOADER = ModelLoader(CURRENT_STATE.model_path)
 VIDEO_PROCESSOR = VideoProcessor(MODEL_LOADER, GLOBAL_CONFIG, CURRENT_STATE, RECORD_HANDLER)
-ACTION_HANDLER = ActionHandler(VIDEO_PROCESSOR)
+ACTION_HANDLER = ActionHandler(VIDEO_PROCESSOR, GLOBAL_CONFIG.javascript_keys)
 OVERLAY = Overlay(VIDEO_PROCESSOR)
+TRAINING_HANDLER = TrainingHandler(GLOBAL_CONFIG, CURRENT_STATE, MODEL_LOADER)
 
 
 def index():
@@ -106,6 +110,8 @@ async def get_dropdown_options(gesture_name):
     for gesture in GLOBAL_CONFIG.specific_actions_dropdown:
         if gesture['value'] == CURRENT_STATE.gestures[gesture_name].action:
             current_action = gesture['text']
+        else:
+            current_action = 'CUSTOM'
 
     current_action = {'value':CURRENT_STATE.gestures[gesture_name].action, 'text':str(current_action)}
     dropdown = [current_action] + GLOBAL_CONFIG.specific_actions_dropdown if current_action['text'] not in GLOBAL_CONFIG.specific_actions.keys() else GLOBAL_CONFIG.specific_actions_dropdown
@@ -176,3 +182,21 @@ async def is_recording_done():
         return jsonify({'status': 200, 'message': 'Recording done'})
     else:
         return jsonify({'status': 403, 'message': 'Recording in progress'})
+    
+
+async def start_training():
+    training_thread = threading.Thread(target=TRAINING_HANDLER.train, daemon=True)
+    training_thread.start()
+    return jsonify({'success': True})
+
+
+async def is_training_done():
+    if not TRAINING_HANDLER.training:
+        return jsonify({'status': 200, 'message': 'Recording done'})
+    else:
+        return jsonify({'status': 403, 'message': 'Recording in progress'})
+
+
+async def finish_training():
+    MODEL_LOADER.switch_model(CURRENT_STATE.model_path)
+    return jsonify({'success': True})

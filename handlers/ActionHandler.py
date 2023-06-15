@@ -6,12 +6,14 @@ import json
 
 class ActionHandler:
 
-    def __init__(self, video_processor_instance):
+    def __init__(self, video_processor_instance, js_keys):
         self._scroll_sensitivity = 5
         self._cursor_sensitivity = 10
         self._trigger = video_processor_instance.new_prediction
         self._trigger_lock = video_processor_instance.prediction_lock
         self._video_processor = video_processor_instance
+
+        self._js_keys = js_keys
 
         self._click_button = 'left'
         self._keys_to_press = []
@@ -158,11 +160,14 @@ class ActionHandler:
 
                 for action in self._keys_to_press:
                     if action['action'] == 'down':
-                        keys_down.append(action['key'])
-                        pyautogui.keyDown(action['key'])
+                        keys_down.append(self._js_keys[action['key']])
+                        pyautogui.keyDown(self._js_keys[action['key']])
                     elif action['action'] == 'up':
-                        keys_down.remove(action['key'])
-                        pyautogui.keyUp(action['key'])
+                        try:
+                            keys_down.remove(self._js_keys[action['key']])
+                        except ValueError:
+                            pyautogui.keyDown(self._js_keys[action['key']])
+                        pyautogui.keyUp(self._js_keys[action['key']])
 
                 for key in keys_down:
                     pyautogui.keyUp(key)

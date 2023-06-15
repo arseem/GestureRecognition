@@ -29,6 +29,9 @@ app.add_url_rule('/save_state', view_func=routes.save_state)
 app.add_url_rule('/start_recording/<gesture_name>', view_func=routes.start_recording)
 app.add_url_rule('/stop_recording/', view_func=routes.stop_recording)
 app.add_url_rule('/is_recording_done/', view_func=routes.is_recording_done)
+app.add_url_rule('/start_training/', view_func=routes.start_training)
+app.add_url_rule('/is_training_done/', view_func=routes.is_training_done)
+app.add_url_rule('/finish_training/', view_func=routes.finish_training)
 
 if __name__ == '__main__':
     # app.run()

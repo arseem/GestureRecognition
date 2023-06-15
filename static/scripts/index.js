@@ -16,9 +16,11 @@ async function toggleGesture(button, gesture_id) {
             else {
                 button.checked = false;
                 gestureLabel = button.parentElement.querySelector(".gesture_label");
-                gestureLabel.style.color = "red";
-                if (!gestureLabel.textContent.includes("NOT LEARNED")) {
-                    gestureLabel.textContent = gestureLabel.textContent + " (NOT LEARNED)";
+                // gestureLabel.style.color = "red";
+                gestureSpan = gestureLabel.parentElement.querySelector("span");
+                if (!gestureSpan.textContent) {
+                    gestureSpan.textContent = " (NOT LEARNED)";
+                    gestureSpan.style.color = "red";
                 }
             }
         });
@@ -171,10 +173,16 @@ async function updateInfo() {
                 verdictDisplay.textContent = 'No gesture detected';
             }
 
-            if (needs_training) {
-                document.getElementById('trainingButton').style.display = 'block';
-            } else {
-                document.getElementById('trainingButton').style.display = 'none';
+            trainingButton = document.getElementById('trainingButton');
+            if (trainingButton.textContent != "Training in progress...") {
+                if (needs_training ) {
+                    trainingButton.style.display = 'block';
+                    trainingButton.disabled = false
+                    
+                } else {
+                    trainingButton.style.display = 'none';
+                    trainingButton.disabled = true
+                }
             }
 
             scoresDisplay.innerHTML = output;
@@ -207,6 +215,9 @@ async function toggleDetails(event) {
       .then(response => response.json())
           .then(data => {
               // Dynamically create and append option elements
+              for (var i = dropdown.options.length - 1; i >= 0; i--) {
+                  dropdown.remove(i);
+              }
               const dropdown_data = data[1];
               const type = data[0];
               dropdown_data.forEach(option => {
@@ -415,10 +426,33 @@ function checkRecordingState() {
     });
 }
 
+async function trainNewModel(button) {
+    fetch('/start_training')
+    button.textContent = "Training in progress...";
+    button.disabled = true;
+    trainingInterval = setInterval(checkTrainingState, 500);
+}
+
+async function checkTrainingState() {
+    fetch('/is_training_done').then(response => {
+        response.json().then(data => {
+            if (data.status === 200) {
+                fetch('/finish_training').then(response => {
+                    clearInterval(trainingInterval);
+                    document.getElementById("trainButton").style.display = 'none';
+                    document.getElementById("trainButton").textContent = 'Model outdated, click to train';
+                    location.reload();
+                });
+            }
+        });
+    });
+}
+
 // Call the updateInfo async function every 0.1 seconds
 const fpsInterval = setInterval(updateFps, 100);
 const dataInterval = setInterval(updateInfo, 100);
 var recordingInterval = null;
+var trainingInterval = null;
 var currentGestureName = "";
 var keys = [];
 var codes = [];
